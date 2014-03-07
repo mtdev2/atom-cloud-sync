@@ -4,8 +4,7 @@ module.exports =
 class CloudSyncView extends View
   @content: ->
     @div class: 'cloud-sync overlay from-top', =>
-      @div "Syncing Clouds", class: "message", =>
-        @span "heh", class: "icon-cloud-upload"
+      @div " TO THE CLOUD ", class: "message icon-cloud-upload"
 
   initialize: (serializeState) ->
     atom.workspaceView.command "cloud-sync:toggle", => @toggle()

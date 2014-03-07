@@ -8,5 +8,5 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
 
-#'.workspace':
-#  'ctrl-alt-o': 'cloud-sync:toggle'
+'.workspace':
+  'ctrl-alt-o': 'cloud-sync:toggle'

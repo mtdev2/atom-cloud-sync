@@ -3,7 +3,7 @@
   "main": "./lib/cloud-sync",
   "version": "0.0.1",
   "description": "Sync Files to Cloud Storage from Atom",
-  "activationEvents": [],
+  "activationEvents": ["cloud-sync:toggle"],
   "repository": "https://github.com/rackerlabs/atom-cloud-sync",
   "license": "Apache 2",
   "engines": {
