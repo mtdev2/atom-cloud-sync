@@ -1,13 +1,8 @@
-CloudSyncView = require './cloud-sync-view'
-
 module.exports =
-  cloudSyncView: null
-
   activate: (state) ->
-    @cloudSyncView = new CloudSyncView(state.cloudSyncViewState)
+    atom.workspaceView.command 'cloud-sync:sync', ->
+      if itemPath = getActiveSidebarPath()
+        console.log("Synergizing #{ itemPath } with the cloud")
 
-  deactivate: ->
-    @cloudSyncView.destroy()
-
-  serialize: ->
-    cloudSyncViewState: @cloudSyncView.serialize()
+getActiveSidebarPath = ->
+  selected = atom.workspaceView.find('.tree-view .selected')?.view()?.getPath?()
