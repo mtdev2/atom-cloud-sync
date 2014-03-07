@@ -14,14 +14,14 @@ module.exports =
 
     @storage = new Storage(creds)
 
-    getSelectedView = =>
-      selected_view = atom.workspaceView.find('.tree-view .selected')?.view()
+    getSelectedView = ->
+      selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
 
-    logFile = =>
+    logFile = ->
       if itemPath = getSelectedView().getPath()
         console.log("Synergizing #{ itemPath } with the cloud")
 
-    uploadFile = =>
+    uploadFile = ->
       view = getSelectedView()
       itemPath = view.getPath()
 
@@ -29,7 +29,7 @@ module.exports =
         fileName = view.fileName.text()
 
         console.log("CyberSynergizing #{ itemPath } with the cloud")
-        
+
         @storage.uploadFile(itemPath, "cloudsync", fileName)
 
     atom.workspaceView.command 'cloud-sync:sync', uploadFile
