@@ -5,4 +5,4 @@ module.exports =
         console.log("Synergizing #{ itemPath } with the cloud")
 
 getActiveSidebarPath = ->
-  selected = atom.workspaceView.find('.tree-view .selected')?.view()?.getPath?()
+  path = atom.workspaceView.find('.tree-view .selected')?.view()?.getPath?()
