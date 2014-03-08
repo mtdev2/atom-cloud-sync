@@ -17,8 +17,21 @@ module.exports =
     getSelectedView = ->
       selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
 
-    uploadFile = =>
+    upload = ->
       view = getSelectedView()
+
+      if(view.file?)
+        uploadFile(view)
+      else if(view.directory?)
+        uploadDirectory(view)
+      else
+        console.log("What kind of view are you?")
+
+    uploadDirectory = (view) =>
+      console.error("Directory upload not implemented")
+
+    uploadFile = (view) =>
+
       itemPath = view.getPath()
 
       if itemPath?
@@ -28,4 +41,4 @@ module.exports =
 
         @storage.uploadFile(itemPath, "cloudsync", fileName)
 
-    atom.workspaceView.command 'cloud-sync:sync', uploadFile
+    atom.workspaceView.command 'cloud-sync:sync', upload
