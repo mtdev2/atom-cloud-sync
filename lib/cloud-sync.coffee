@@ -17,18 +17,14 @@ module.exports =
     getSelectedView = ->
       selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
 
-    logFile = ->
-      if itemPath = getSelectedView().getPath()
-        console.log("Synergizing #{ itemPath } with the cloud")
-
-    uploadFile = ->
+    uploadFile = =>
       view = getSelectedView()
       itemPath = view.getPath()
 
       if itemPath?
         fileName = view.fileName.text()
 
-        console.log("CyberSynergizing #{ itemPath } with the cloud")
+        console.log("Synergizing #{ itemPath } with the cloud")
 
         @storage.uploadFile(itemPath, "cloudsync", fileName)
 
