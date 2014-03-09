@@ -6,6 +6,7 @@ module.exports =
 
   activate: (state) ->
 
+    # TODO: Extract into a config
     creds =
       provider: 'rackspace'
       username: process.env.OS_USERNAME
@@ -17,7 +18,8 @@ module.exports =
     getSelectedView = ->
       selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
 
-    upload = ->
+    # Uploads the selected directory or file
+    uploadSelection = ->
       view = getSelectedView()
 
       if(view.file?)
@@ -41,4 +43,4 @@ module.exports =
 
         @storage.uploadFile(itemPath, "cloudsync", fileName)
 
-    atom.workspaceView.command 'cloud-sync:sync', upload
+    atom.workspaceView.command 'cloud-sync:sync', uploadSelection
