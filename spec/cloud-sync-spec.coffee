@@ -1,3 +1,4 @@
+{WorkspaceView} = require 'atom'
 CloudSync = require '../lib/cloud-sync'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
@@ -10,7 +11,7 @@ describe "CloudSync", ->
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('cloudSync')
+    activationPromise = atom.packages.activatePackage('cloud-sync')
 
   describe "when the cloud-sync:sync event is triggered", ->
     it "attempts to sync the selected file", ->
