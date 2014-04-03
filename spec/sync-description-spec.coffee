@@ -47,3 +47,21 @@ describe 'SyncDescription', ->
   it 'defaults the psuedoDirectory to /', ->
     withDescription ['foo', '.cloud-sync.json'], (sd) ->
       expect(sd.psuedoDirectory).toBe('/')
+
+  describe 'finding CloudCredentials', ->
+
+    itLoadsCredentials = (path, creduser) ->
+      c = null
+      withDescription path, (sd) ->
+        sd.withCredentials (err, creds) ->
+          console.log err if err
+          c = creds
+
+      waitsFor -> c?
+      runs -> expect(c.username).toBe(creduser)
+
+    it 'finds CloudCredentials if provided locally', ->
+      itLoadsCredentials ['foo', '.cloud-sync.json'], 'foo'
+
+    it 'finds CloudCredentials by walking the filesystem', ->
+      itLoadsCredentials ['bar', '.cloud-sync.json'], 'defaultuser'

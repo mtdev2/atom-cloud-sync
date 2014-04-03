@@ -1,5 +1,6 @@
 path = require 'path'
 {Directory} = require 'pathwatcher'
+CloudCredentials = require './cloud-credentials'
 
 module.exports =
 
@@ -31,8 +32,18 @@ class SyncDescription
 
   # Public: Returns the full path of the ".cloud-sync.json" file that created
   # this instance.
+  #
   configPath: ->
     path.join @directory.getRealPathSync(), '.cloud-sync.json'
+
+  # Public: Scan the filesystem for the CloudCredentials relevant to this
+  # directory and yield them to the provided callback.
+  #
+  # callback - Invoked with any errors that are recognized, or with the
+  #            CloudCredentials instance relevant to this directory.
+  #
+  withCredentials: (callback) ->
+    CloudCredentials.withNearest @directory, callback
 
   # Public: Scan the current project's filesystem for directories containing
   # ".cloud-sync.json" files. Parse each one into a SyncDescription and send it
