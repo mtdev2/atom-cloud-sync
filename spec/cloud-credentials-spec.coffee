@@ -22,3 +22,10 @@ describe 'CloudCredentials', ->
       expect(credentials.username).toBe('defaultuser')
       expect(credentials.apiKey).toBe('yomama')
       expect(credentials.region).toBe('DFW')
+
+  it 'creates itself from a File', ->
+    root = atom.project.getRootDirectory().getRealPathSync()
+    f = new File(path.join, '.cloud-credentials.json')
+
+    CloudCredentials.createFrom f, (creds) ->
+      expect(creds.username).toBe('defaultuser')
