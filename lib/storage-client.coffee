@@ -5,7 +5,7 @@ fs = require('fs')
 
 module.exports =
 
-class Storage
+class StorageClient
 
   # Cloud Storage
   #
@@ -18,7 +18,7 @@ class Storage
   #    apiKey: process.env.OS_PASSWORD
   #    region: process.env.OS_REGION_NAME
   #
-  #  storage = new Storage(creds)
+  #  storage = new StorageClient(creds)
   #
   constructor: (creds) ->
     @client = pkgcloud.storage.createClient(creds)

@@ -1,4 +1,4 @@
-Storage = require('./storage-client')
+StorageClient = require('./storage-client')
 
 module.exports =
 
@@ -13,7 +13,7 @@ module.exports =
       apiKey: process.env.OS_PASSWORD
       region: process.env.OS_REGION_NAME
 
-    @storage = new Storage(creds)
+    @storage = new StorageClient(creds)
 
     getSelectedView = ->
       selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
