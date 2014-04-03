@@ -1,3 +1,4 @@
+path = require 'path'
 {Directory} = require 'pathwatcher'
 
 module.exports =
@@ -7,7 +8,31 @@ module.exports =
 #
 class SyncDescription
 
+  # Internal: Create a new SyncDescription from the contents of a
+  # ".cloud-sync.json" file.
+  #
+  # directory - The Directory to be synchronized.
+  # settings  - Customize the synchronization behavior.
+  #             container - Required. The container that this directory should
+  #                         be mapped to within cloud storage.
+  #             directory - Optional. Psuedodirectory within the target
+  #                         container that files should be placed within.
+  #
+  # Raises InvalidSyncConfiguration if required settings are missing.
+  #
   constructor: (@directory, settings) ->
+    @container = settings.container
+    @psuedoDirectory = settings.directory
+
+    unless @container?
+      throw
+        name: 'InvalidSyncConfiguration'
+        description: "#{@configPath()} is missing a required 'container' key!"
+
+  # Public: Returns the full path of the ".cloud-sync.json" file that created
+  # this instance.
+  configPath: ->
+    path.join @directory.getRealPathSync(), '.cloud-sync.json'
 
   # Public: Scan the current project's filesystem for directories containing
   # ".cloud-sync.json" files. Parse each one into a SyncDescription and send it
