@@ -1,8 +1,8 @@
-Storage = require('./storage-client')
+StorageClient = require('./storage-client')
 
 module.exports =
 
-  storage: null
+  storageClient: null
 
   activate: (state) ->
 
@@ -13,7 +13,7 @@ module.exports =
       apiKey: process.env.OS_PASSWORD
       region: process.env.OS_REGION_NAME
 
-    @storage = new Storage(creds)
+    @storageClient = new StorageClient(creds)
 
     getSelectedView = ->
       selectedView = atom.workspaceView.find('.tree-view .selected')?.view()
@@ -41,6 +41,6 @@ module.exports =
 
         console.log("Synergizing #{ itemPath } with the cloud")
 
-        @storage.uploadFile(itemPath, "cloudsync", fileName)
+        @storageClient.uploadFile(itemPath, "cloudsync", fileName)
 
     atom.workspaceView.command 'cloud-sync:sync', uploadSelection
