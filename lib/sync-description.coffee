@@ -22,7 +22,7 @@ class SyncDescription
   #
   constructor: (@directory, settings) ->
     @container = settings.container
-    @psuedoDirectory = settings.directory
+    @psuedoDirectory = settings.directory or '/'
 
     unless @container?
       throw
