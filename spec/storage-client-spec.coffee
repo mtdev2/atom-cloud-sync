@@ -18,14 +18,12 @@ describe 'StorageClient', ->
     fname = path.join root, subpath...
     f = new File fname
 
-    sd = null
-    SyncDescription.createFrom f, d, (err, instance) ->
-      if err
-        console.log err
-        callback(null)
-      sd = instance
 
-    waitsFor -> sd?
-    runs -> callback(sd)
+  it 'creates a client', ->
+    creds =
+      provider: 'rackspace'
+      username: 'user'
+      apiKey: 'secretovaltine'
+      region: 'IAD'
 
-  it
+    storageClient = new StorageClient(creds)
