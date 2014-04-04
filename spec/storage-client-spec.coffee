@@ -16,16 +16,17 @@ class FakeCloudClient
     @fulldata = null
 
     # Solely for later inspection/`expect`ation
-    @upload_options = null
-    @upload_callback = null
+    @uploadOptions = null
+    @uploadCallback = null
 
   upload: (options, callback) ->
     # Clear out any old data
     @bufferedData = []
     @fulldata = null
 
-    @upload_options = options
-    @upload_callback = callback
+    @uploadOptions = options
+    console.log(options)
+    @uploadCallback = callback
 
     # Set up the object that handles piped in data
     stream = new Stream.Writable()
