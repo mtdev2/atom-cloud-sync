@@ -76,6 +76,8 @@ class SyncView extends ScrollView
 
 module.exports =
 
+  SyncView: SyncView
+
   shareUriFor: (path) -> 'cloud-sync-config:/' + path
 
   registerOpenerIn: (workspace) ->
