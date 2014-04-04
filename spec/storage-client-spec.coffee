@@ -2,7 +2,41 @@ StorageClient = require('../lib/storage-client')
 {Directory, File} = require 'pathwatcher'
 path = require 'path'
 
+pkgcloud = require('pkgcloud')
+
 Stream = require 'stream'
+
+# A storage client for pkgcloud
+class FakeCloudClient
+
+  constructor: (creds) ->
+    @creds = creds
+
+    @bufferedData = []
+    @fulldata = null
+
+    # Solely for later inspection/`expect`ation
+    @upload_options = null
+    @upload_callback = null
+
+  upload: (options, callback) ->
+    # Clear out any old data
+    @bufferedData = []
+    @fulldata = null
+
+    @upload_options = options
+    @upload_callback = callback
+
+    # Set up the object that handles piped in data
+    stream = new Stream.Writable()
+    stream.write = (data, stuff...) =>
+      @bufferedData.push(data)
+      return true
+
+    stream.end = (stuff...) =>
+      @fulldata = @bufferedData.join("").trim()
+
+    return stream
 
 describe 'StorageClient', ->
 
@@ -15,39 +49,27 @@ describe 'StorageClient', ->
     # Just using a valid provider for now
     # TODO: Mock the creation of the client
     creds =
-      provider: 'rackspace'
+      provider: 'totallyfake'
       username: 'bigcloud'
       apiKey: 'secretovaltine'
-      region: 'SAT'
+
+    mockClient = null
+
+    # Mock out the createClient so it creates a FakeCloudClient instead
+    pkgcloud.storage.createClient = (options) ->
+      expect(options).toBe(creds)
+      mockClient = new FakeCloudClient(options)
+      return mockClient
 
     storageClient = new StorageClient(creds)
 
     # We'll mock the internal client of the storageClient
     # To handle the data upload
 
-    bufferedData = []
-    fulldata = null
-
-    client =
-      upload: () ->
-
-        # Set up the object that handles piped in data
-        stream = new Stream.Writable()
-        stream.write = (data, stuff...) ->
-          bufferedData.push(data)
-          return true
-
-        stream.end = (stuff...) ->
-          fulldata = bufferedData.join("").trim()
-
-        return stream
-
-    storageClient.client = client
-
     fileToUpload = path.join(fixturePath(), "storage-client", "cats")
 
     storageClient.uploadFile(fileToUpload, "container", "object")
 
-    waitsFor -> fulldata?
+    waitsFor -> mockClient.fulldata?
 
-    runs -> expect(fulldata).toBe("MEOW")
+    runs -> expect(mockClient.fulldata).toBe("MEOW")
