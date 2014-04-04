@@ -73,4 +73,14 @@ describe 'StorageClient', ->
 
     waitsFor -> mockClient.fulldata?
 
-    runs -> expect(mockClient.fulldata).toBe("MEOW")
+    runs ->
+
+      layout =
+        container: "container"
+        remote: "object"
+
+      expect(mockClient.uploadOptions).toEqual(layout)
+
+      expect(mockClient.fulldata).toBe("MEOW")
+
+      # TODO: Test our handling of the callback
