@@ -1,4 +1,5 @@
 {$$, ScrollView, EditorView} = require 'atom'
+{Directory, File} = require 'pathwatcher'
 path = require 'path'
 
 class SyncView extends ScrollView
@@ -64,8 +65,14 @@ class SyncView extends ScrollView
         @i class: 'icon icon-warning'
         @span err
 
+  getSyncFile: ->
+    [_, dirPath] = @uri.match /^cloud-sync-config:\/(.*)/
+    new File(path.join dirPath, '.cloud-sync.json')
+
   apply: ->
-    console.log "BAM"
+    @getSyncFile().write JSON.stringify
+      container: @containerName.getText()
+      directory: @directoryName.getText()
 
 module.exports =
 
