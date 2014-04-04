@@ -1,5 +1,7 @@
 Storage = require('./storage-client')
 
+syncview = require './sync-view'
+
 module.exports =
 
   storage: null
@@ -29,7 +31,7 @@ module.exports =
       else
         console.log("What kind of view are you?")
 
-    uploadDirectory = (view) =>
+    uploadDirectory = (view) ->
       console.error("Directory upload not implemented")
 
     uploadFile = (view) =>
@@ -44,3 +46,7 @@ module.exports =
         @storage.uploadFile(itemPath, "cloudsync", fileName)
 
     atom.workspaceView.command 'cloud-sync:sync', uploadSelection
+
+    syncview.registerOpenerIn atom.workspace
+    atom.workspaceView.command 'cloud-sync:sync-dialog', ->
+      atom.workspace.open syncview.shareUriFor getSelectedView().getPath()
