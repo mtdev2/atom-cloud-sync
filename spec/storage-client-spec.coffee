@@ -6,7 +6,7 @@ pkgcloud = require('pkgcloud')
 
 Stream = require 'stream'
 
-# A storage client for pkgcloud
+# A totally hokey storage client for pkgcloud
 class FakeCloudClient
 
   constructor: (creds) ->
