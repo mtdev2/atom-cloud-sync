@@ -36,5 +36,5 @@ class CloudCredentials
   # callback  - Will be invoked with any errors and the constructed instance.
   #
   @withNearest: (directory, callback) ->
-    pathHelpers.nearestParent directory, FILENAME, (err, dir, file)->
+    pathHelpers.nearestParent directory, FILENAME, (err, dir, file) ->
       CloudCredentials.createFrom file, callback

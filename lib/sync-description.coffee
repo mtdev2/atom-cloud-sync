@@ -2,6 +2,10 @@ path = require 'path'
 {Directory} = require 'pathwatcher'
 CloudCredentials = require './cloud-credentials'
 
+pathHelpers = require './path-helpers'
+
+FILENAME = '.cloud-sync.json'
+
 module.exports =
 
 # Public: Model corresponding to a dotfile that describes where and how a
@@ -34,7 +38,7 @@ class SyncDescription
   # this instance.
   #
   configPath: ->
-    path.join @directory.getRealPathSync(), '.cloud-sync.json'
+    path.join @directory.getRealPathSync(), FILENAME
 
   # Public: Scan the filesystem for the CloudCredentials relevant to this
   # directory and yield them to the provided callback.
@@ -44,6 +48,24 @@ class SyncDescription
   #
   withCredentials: (callback) ->
     CloudCredentials.withNearest @directory, callback
+
+  # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
+  # the directory tree. Parse the first one found into a SyncDescription.
+  #
+  # directory - The Directory of the starting point for the scan.
+  # callback  - Invoked with any errors that are encountered, with a
+  #             SyncDescription instance if one is discovered, or with "null"
+  #             if none are.
+  @withNearest: (directory, callback) ->
+    pathHelpers.nearestParent directory, FILENAME, (err, dir, file) =>
+      if err?
+        callback(err, null, null)
+        return
+
+      if dir? and file?
+        @createFrom file, dir, callback
+      else
+        callback(null, null, null)
 
   # Public: Scan the current project's filesystem for directories containing
   # ".cloud-sync.json" files. Parse each one into a SyncDescription and send it
@@ -68,7 +90,7 @@ class SyncDescription
       for entry in list
         if entry instanceof Directory
           @findAllIn entry, callback
-        else if entry.getBaseName() is '.cloud-sync.json'
+        else if entry.getBaseName() is FILENAME
           @createFrom entry, root, callback
 
   # Internal: Construct a new instance from the parsed contents of a

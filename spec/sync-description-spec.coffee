@@ -4,13 +4,12 @@ path = require 'path'
 
 describe 'SyncDescription', ->
 
-  fixtureDir = ->
+  fixtureDir = (names...) ->
     root = atom.project.getRootDirectory()
-    new Directory(path.join root.getRealPathSync(), 'sync-description')
+    dirname = path.join root.getRealPathSync(), 'sync-description', names...
+    new Directory(dirname)
 
-  fixturePath = (names...) ->
-    dirname = fixtureDir().getRealPathSync()
-    path.join dirname, names...
+  fixturePath = (names...) -> fixtureDir(names...).getRealPathSync()
 
   withDescription = (subpath, callback) ->
     root = fixtureDir().getRealPathSync()
@@ -41,14 +40,14 @@ describe 'SyncDescription', ->
 
   it 'finds a .cloud-sync.json in a parent directory', ->
     sd = null
-    SyncDescription.withNearest fixturePath('parent', 'child'), (err, desc) ->
+    SyncDescription.withNearest fixtureDir('parent', 'child'), (err, desc) ->
       expect(err).toBeNull()
       sd = desc
 
     waitsFor -> sd?
     runs ->
       rp = sd.directory.getRealPathSync()
-      expect(rp).toBe(fixturePath 'parent', '.cloud-sync.json')
+      expect(rp).toBe(fixturePath 'parent')
 
   it 'returns null if no .cloud-sync.json files exist', ->
 
