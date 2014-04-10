@@ -4,19 +4,18 @@ path = require 'path'
 
 describe 'SyncDescription', ->
 
-  fixtureDir = () ->
+  fixtureDir = ->
     root = atom.project.getRootDirectory()
-
     new Directory(path.join root.getRealPathSync(), 'sync-description')
+
+  fixturePath = (names...) ->
+    dirname = fixtureDir().getRealPathSync()
+    path.join dirname, names...
 
   withDescription = (subpath, callback) ->
     root = fixtureDir().getRealPathSync()
-
-    dirname = path.join root, subpath[..-2]...
-    d = new Directory dirname
-
-    fname = path.join root, subpath...
-    f = new File fname
+    d = new Directory fixturePath subpath[..-2]...
+    f = new File fixturePath subpath...
 
     sd = null
     SyncDescription.createFrom f, d, (err, instance) ->
@@ -31,13 +30,27 @@ describe 'SyncDescription', ->
   it 'finds all .cloud-sync.json files in the project', ->
     dirs = []
 
-    SyncDescription.findAllIn fixtureDir(), (err, desc) =>
+    SyncDescription.findAllIn fixtureDir(), (err, desc) ->
       dirs.push(desc.directory.getBaseName())
 
-      if dirs.length is 2
+      if dirs.length is 3
         expect(dirs).toContain('bar')
         expect(dirs).toContain('foo')
-      expect(dirs.length > 2).not.toBe(true)
+        expect(dirs).toContain('parent')
+      expect(dirs.length > 3).not.toBe(true)
+
+  it 'finds a .cloud-sync.json in a parent directory', ->
+    sd = null
+    SyncDescription.withNearest fixturePath('parent', 'child'), (err, desc) ->
+      expect(err).toBeNull()
+      sd = desc
+
+    waitsFor -> sd?
+    runs ->
+      rp = sd.directory.getRealPathSync()
+      expect(rp).toBe(fixturePath 'parent', '.cloud-sync.json')
+
+  it 'returns null if no .cloud-sync.json files exist', ->
 
   it 'parses configuration data from .cloud-sync.json', ->
     withDescription ['bar', '.cloud-sync.json'], (sd) ->
