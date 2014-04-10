@@ -1,5 +1,8 @@
 {Directory, File} = require 'pathwatcher'
 path = require 'path'
+pathHelpers = require './path-helpers'
+
+FILENAME = '.cloud-credentials.json'
 
 module.exports =
 
@@ -33,24 +36,5 @@ class CloudCredentials
   # callback  - Will be invoked with any errors and the constructed instance.
   #
   @withNearest: (directory, callback) ->
-    directory.getEntries (err, list) =>
-      if err
-        callback(err, null)
-        return
-
-      found = false
-      for entry in list
-        if entry instanceof File and entry.getBaseName() is '.cloud-credentials.json'
-          found = true
-          CloudCredentials.createFrom entry, (err, instance) ->
-            callback(err, instance)
-
-      unless found
-        real = directory.getRealPathSync()
-        parent = new Directory(path.join directory.getPath(), '..')
-
-        # TODO this won't work on non-*nix platforms! So, basically, Windows.
-        if real is '/'
-          callback(null, null)
-        else
-          @withNearest parent, callback
+    pathHelpers.nearestParent directory, FILENAME, (err, dir, file)->
+      CloudCredentials.createFrom file, callback
