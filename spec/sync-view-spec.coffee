@@ -1,6 +1,7 @@
 sv = require '../lib/sync-view'
 {SyncDescription} = require '../lib/sync-description'
 path = require 'path'
+fs = require 'fs'
 {Directory, File} = require 'pathwatcher'
 
 describe 'shareUriFor', ->
@@ -34,6 +35,8 @@ describe 'SyncView', ->
 
   beforeEach ->
     base = atom.project.getRootDirectory().getRealPathSync()
+
+    fs.unlink fullPathFor('nodesc', '.cloud-sync.json'), (err) ->
 
   describe 'finishInitialization', ->
 
