@@ -1,6 +1,7 @@
 {$$, ScrollView, EditorView} = require 'atom'
 {Directory, File} = require 'pathwatcher'
 path = require 'path'
+fs = require 'fs'
 
 {SyncDescription, FILENAME} = require './sync-description'
 
@@ -32,31 +33,51 @@ class SyncView extends ScrollView
               outlet: 'applyButton',
               click: 'apply'
             }, 'Apply')
+            @button({
+              class: 'btn btn-lg',
+              disabled: true,
+              outlet: 'unsyncButton',
+              click: 'unsync'
+            }, 'Unsync')
 
   initialize: (@uri) ->
     @ready = false
+    @syncDescription = null
 
     [_, dirPath] = @uri.match /^cloud-sync-config:\/(.*)/
     @directory = new Directory dirPath
-    SyncDescription.withNearest @directory, (err, instance) =>
-      throw err if err
-
-      @syncDescription = instance
-      @finishInitialization()
-
     @containerName.getEditor().on 'contents-modified', => @checkValidity()
 
-  finishInitialization: ->
-    @ready = true
+    @refresh()
 
-    fullDir = @getSyncDirectory().getRealPathSync()
-    relDir = atom.project.relativize fullDir
-    @fsDirName.text relDir
+  reset: ->
+    @ready = false
+    @syncDescription = null
+    @unsyncButton.prop 'disabled', true
+    @applyButton.prop 'disabled', true
 
-    if @syncDescription?
-      @containerName.setText @syncDescription.container
-      @directoryName.setText @syncDescription.psuedoDirectory
-      @checkValidity()
+  refresh: ->
+    @reset()
+    SyncDescription.withNearest @directory, (err, instance) =>
+      throw err if err
+      @syncDescription = instance
+
+      @ready = true
+
+      fullDir = @getSyncDirectory().getRealPathSync()
+      relDir = atom.project.relativize fullDir
+      @fsDirName.text relDir
+
+      if @syncDescription?
+        @containerName.setText @syncDescription.container
+        @directoryName.setText @syncDescription.psuedoDirectory
+        @unsyncButton.prop 'disabled', false
+        @checkValidity()
+      else
+        @containerName.setText ''
+        @directoryName.setText ''
+        @unsyncButton.prop 'disabled', true
+        @applyButton.prop 'disabled', true
 
   getUri: -> @uri
 
@@ -113,6 +134,12 @@ class SyncView extends ScrollView
     @getSyncFile().write JSON.stringify
       container: @containerName.getText()
       directory: @directoryName.getText()
+
+  unsync: (callback) ->
+    @reset()
+    fs.unlink @getSyncFile().getRealPathSync(), (err) =>
+      @refresh()
+      callback(err) if callback
 
 module.exports =
 

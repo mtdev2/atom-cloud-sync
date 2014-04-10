@@ -33,9 +33,7 @@ describe 'SyncView', ->
     uri = sv.shareUriFor fullPathFor relativePath...
     new sv.SyncView(uri)
 
-  beforeEach ->
-    base = atom.project.getRootDirectory().getRealPathSync()
-
+  resetFixtures = ->
     fs.unlink fullPathFor('nodesc', '.cloud-sync.json'), (err) ->
 
     new File(fullPathFor 'somedesc', SYNCFILE).write(
@@ -45,6 +43,12 @@ describe 'SyncView', ->
          }
 
       """)
+
+  beforeEach ->
+    base = atom.project.getRootDirectory().getRealPathSync()
+    resetFixtures()
+
+  afterEach -> resetFixtures()
 
   describe 'finishInitialization', ->
 
@@ -155,9 +159,9 @@ describe 'SyncView', ->
 
       runs ->
         expect(view.unsyncButton.prop 'disabled').toBe(false)
-        view.unsync -> unsynched = true
+        view.unsync()
 
-      waitsFor -> unsynched
+      waitsFor -> view.ready
 
       runs ->
         fp = view.getSyncFile().getRealPathSync()
@@ -166,5 +170,5 @@ describe 'SyncView', ->
         expect(view.unsyncButton.prop 'disabled').toBe(true)
         expect(view.applyButton.prop 'disabled').toBe(true)
         expect(view.containerName.getText()).toBe('')
-        expect(view.directoryNAme.getText()).toBe('')
+        expect(view.directoryName.getText()).toBe('')
         expect(view.containerErr.css 'display').toBe('none')
