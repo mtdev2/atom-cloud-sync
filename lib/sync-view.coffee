@@ -135,11 +135,9 @@ class SyncView extends ScrollView
       container: @containerName.getText()
       directory: @directoryName.getText()
 
-  unsync: (callback) ->
+  unsync: ->
     @reset()
-    fs.unlink @getSyncFile().getRealPathSync(), (err) =>
-      @refresh()
-      callback(err) if callback
+    fs.unlink @getSyncFile().getRealPathSync(), (err) => @refresh()
 
 module.exports =
 
