@@ -1,5 +1,7 @@
 sv = require '../lib/sync-view'
+SyncDescription = require '../lib/sync-description'
 path = require 'path'
+{Directory, File} = require 'pathwatcher'
 
 describe 'shareUriFor', ->
 
@@ -69,7 +71,35 @@ describe 'SyncView', ->
 
   describe 'getSyncFile', ->
 
-    it 'finds the .cloud-sync.json file matching the URI', ->
+    it 'uses a new .cloud-sync.json file if none exists', ->
       view = syncViewIn 'nodesc'
       rp = view.getSyncFile().getRealPathSync()
       expect(rp).toBe(fullPathFor 'nodesc', '.cloud-sync.json')
+
+    it 'finds a .cloud-sync.json file in a parent directory', ->
+      view = syncViewIn 'parent', 'child'
+      rp = view.getSyncFile().getRealPathSync()
+      expect(rp).toBe(fullPathFor 'parent', '.cloud-sync.json')
+
+  describe 'apply', ->
+
+    it 'writes a .cloud-sync.json file', ->
+      view = syncViewIn 'nodesc'
+      view.containerName.getEditor().setText 'superawesome'
+      view.directoryName.getEditor().setText 'blerp'
+
+      view.apply()
+
+      dir = new Directory(fullPathFor 'nodesc')
+      sf = new File(fullPathFor 'nodesc', '.cloud-sync.json')
+      expect(sf.exists()).toBe(true)
+
+      sd = null
+      SyncDescription.createFrom sf, dir, (err, desc) ->
+        console.log err if err
+        sd = desc
+      waitsFor -> sd?
+
+      runs ->
+        expect(sd.container).toBe('superawesome')
+        expect(sd.psuedoDirectory).toBe('blerp')
