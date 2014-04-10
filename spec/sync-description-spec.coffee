@@ -1,4 +1,4 @@
-SyncDescription = require '../lib/sync-description'
+{SyncDescription} = require '../lib/sync-description'
 {Directory, File} = require 'pathwatcher'
 path = require 'path'
 

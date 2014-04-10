@@ -2,6 +2,8 @@
 {Directory, File} = require 'pathwatcher'
 path = require 'path'
 
+{SyncDescription, FILENAME} = require './sync-description'
+
 class SyncView extends ScrollView
 
   @content: ->
@@ -30,6 +32,15 @@ class SyncView extends ScrollView
             }, 'Apply')
 
   initialize: (@uri) ->
+    @ready = false
+
+    [_, dirPath] = @uri.match /^cloud-sync-config:\/(.*)/
+    @directory = new Directory dirPath
+    SyncDescription.withNearest @directory, (err, instance) =>
+      throw err if err
+      @syncDescription = instance
+      @ready = true
+
     @containerName.getEditor().on 'contents-modified', => @checkValidity()
 
   getUri: -> @uri
@@ -66,8 +77,13 @@ class SyncView extends ScrollView
         @span err
 
   getSyncFile: ->
-    [_, dirPath] = @uri.match /^cloud-sync-config:\/(.*)/
-    new File(path.join dirPath, '.cloud-sync.json')
+    unless @ready?
+      throw new Error('SyncView not ready')
+
+    if @syncDescription?
+      new File(@syncDescription.configPath())
+    else
+      new File(path.join @directory.getPath(), FILENAME)
 
   apply: ->
     @getSyncFile().write JSON.stringify

@@ -6,8 +6,6 @@ pathHelpers = require './path-helpers'
 
 FILENAME = '.cloud-sync.json'
 
-module.exports =
-
 # Public: Model corresponding to a dotfile that describes where and how a
 # directory should be synchronized with a cloud storage container.
 #
@@ -30,9 +28,7 @@ class SyncDescription
     @psuedoDirectory = settings.directory or '/'
 
     unless @container?
-      throw
-        name: 'InvalidSyncConfiguration'
-        description: "#{@configPath()} is missing a required 'container' key!"
+      throw new Error("#{@configPath()} is missing a required 'container' key!")
 
   # Public: Returns the full path of the ".cloud-sync.json" file that created
   # this instance.
@@ -108,3 +104,9 @@ class SyncDescription
       instance = new SyncDescription(root, settings)
       callback(null, instance)
     promise.catch (err) -> callback(err, null)
+
+module.exports =
+
+  SyncDescription: SyncDescription
+
+  FILENAME: FILENAME

@@ -1,5 +1,5 @@
 sv = require '../lib/sync-view'
-SyncDescription = require '../lib/sync-description'
+{SyncDescription} = require '../lib/sync-description'
 path = require 'path'
 {Directory, File} = require 'pathwatcher'
 
@@ -73,13 +73,21 @@ describe 'SyncView', ->
 
     it 'uses a new .cloud-sync.json file if none exists', ->
       view = syncViewIn 'nodesc'
-      rp = view.getSyncFile().getRealPathSync()
-      expect(rp).toBe(fullPathFor 'nodesc', '.cloud-sync.json')
+
+      waitsFor -> view.ready
+
+      runs ->
+        rp = view.getSyncFile().getRealPathSync()
+        expect(rp).toBe(fullPathFor 'nodesc', '.cloud-sync.json')
 
     it 'finds a .cloud-sync.json file in a parent directory', ->
       view = syncViewIn 'parent', 'child'
-      rp = view.getSyncFile().getRealPathSync()
-      expect(rp).toBe(fullPathFor 'parent', '.cloud-sync.json')
+
+      waitsFor -> view.ready
+
+      runs ->
+        rp = view.getSyncFile().getRealPathSync()
+        expect(rp).toBe(fullPathFor 'parent', '.cloud-sync.json')
 
   describe 'apply', ->
 
