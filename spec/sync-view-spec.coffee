@@ -23,9 +23,11 @@ describe 'SyncView', ->
 
   [base] = []
 
+  fullPathFor = (relativePath...) ->
+    path.join base, 'sync-view', relativePath...
+
   syncViewIn = (relativePath...) ->
-    fullPath = path.join base, 'sync-view', relativePath...
-    uri = sv.shareUriFor fullPath
+    uri = sv.shareUriFor fullPathFor relativePath...
     new sv.SyncView(uri)
 
   beforeEach ->
@@ -64,3 +66,10 @@ describe 'SyncView', ->
       expect(view.containerErr.css 'display').toBe('none')
       messages = view.containerErr.find('span')
       expect(messages.length).toBe(0)
+
+  describe 'getSyncFile', ->
+
+    it 'finds the .cloud-sync.json file matching the URI', ->
+      view = syncViewIn 'nodesc'
+      rp = view.getSyncFile().getRealPathSync()
+      expect(rp).toBe(fullPathFor 'nodesc', '.cloud-sync.json')
