@@ -28,13 +28,13 @@ class SyncView extends ScrollView
             @subview 'directoryName', new EditorView(mini: true)
           @div class: 'block', =>
             @button({
-              class: 'btn btn-lg btn-primary',
+              class: 'btn btn-lg btn-primary inline-block',
               disabled: true,
               outlet: 'applyButton',
               click: 'apply'
             }, 'Apply')
             @button({
-              class: 'btn btn-lg',
+              class: 'btn btn-lg inline-block',
               disabled: true,
               outlet: 'unsyncButton',
               click: 'unsync'
@@ -134,10 +134,12 @@ class SyncView extends ScrollView
     @getSyncFile().write JSON.stringify
       container: @containerName.getText()
       directory: @directoryName.getText()
+    @refresh()
 
   unsync: ->
+    sfp = @getSyncFile().getRealPathSync()
     @reset()
-    fs.unlink @getSyncFile().getRealPathSync(), (err) => @refresh()
+    fs.unlink sfp, (err) => @refresh()
 
 module.exports =
 
