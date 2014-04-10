@@ -53,6 +53,11 @@ class SyncView extends ScrollView
     relDir = atom.project.relativize fullDir
     @fsDirName.text relDir
 
+    if @syncDescription?
+      @containerName.setText @syncDescription.container
+      @directoryName.setText @syncDescription.psuedoDirectory
+      @checkValidity()
+
   getUri: -> @uri
 
   getTitle: -> "Synchronizing #{path.basename @uri}"

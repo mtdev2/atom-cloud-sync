@@ -35,6 +35,20 @@ describe 'SyncView', ->
   beforeEach ->
     base = atom.project.getRootDirectory().getRealPathSync()
 
+  describe 'finishInitialization', ->
+
+    it 'disables the Apply button until data is loaded', ->
+      view = syncViewIn 'parent', 'child'
+      expect(view.ready).toBe(false)
+      expect(view.applyButton.prop 'disabled').toBe(true)
+
+    it 'populates editors with existing data', ->
+      view = syncViewIn 'parent', 'child'
+      waitsFor -> view.ready
+      runs ->
+        expect(view.containerName.getEditor().getText()).toBe('derpderp')
+        expect(view.directoryName.getEditor().getText()).toBe('snorf')
+
   describe 'checkValidity', ->
 
     [view] = []
