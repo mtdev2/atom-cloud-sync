@@ -46,8 +46,8 @@ describe 'SyncView', ->
       view = syncViewIn 'parent', 'child'
       waitsFor -> view.ready
       runs ->
-        expect(view.containerName.getEditor().getText()).toBe('derpderp')
-        expect(view.directoryName.getEditor().getText()).toBe('snorf')
+        expect(view.containerName.getText()).toBe('derpderp')
+        expect(view.directoryName.getText()).toBe('snorf')
 
   describe 'checkValidity', ->
 
@@ -56,7 +56,7 @@ describe 'SyncView', ->
     beforeEach -> view = syncViewIn 'nodesc'
 
     it 'disallows empty container names', ->
-      view.containerName.getEditor().setText ''
+      view.containerName.setText ''
       view.checkValidity()
 
       expect(view.containerInput.hasClass 'text-error').toBe(true)
@@ -65,7 +65,7 @@ describe 'SyncView', ->
       expect(messages.length).toBe(1)
 
     it 'disallows the / character', ->
-      view.containerName.getEditor().setText "I'm rgbkrk / and I'm here to say
+      view.containerName.setText "I'm rgbkrk / and I'm here to say
         / I like breaking stuff / every day"
       view.checkValidity()
 
@@ -75,7 +75,7 @@ describe 'SyncView', ->
       expect(messages.length).toBe(1)
 
     it 'accepts anything else', ->
-      view.containerName.getEditor().setText 'valid'
+      view.containerName.setText 'valid'
       view.checkValidity()
 
       expect(view.containerInput.hasClass 'text-error').toBe(false)
@@ -109,8 +109,8 @@ describe 'SyncView', ->
       view = syncViewIn 'nodesc'
       waitsFor -> view.ready
       runs ->
-        view.containerName.getEditor().setText 'superawesome'
-        view.directoryName.getEditor().setText 'blerp'
+        view.containerName.setText 'superawesome'
+        view.directoryName.setText 'blerp'
 
         view.apply()
 
