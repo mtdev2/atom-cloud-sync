@@ -1,5 +1,5 @@
 sv = require '../lib/sync-view'
-{SyncDescription} = require '../lib/sync-description'
+{SyncDescription, FILENAME: SYNCFILE} = require '../lib/sync-description'
 path = require 'path'
 fs = require 'fs'
 {Directory, File} = require 'pathwatcher'
@@ -37,6 +37,14 @@ describe 'SyncView', ->
     base = atom.project.getRootDirectory().getRealPathSync()
 
     fs.unlink fullPathFor('nodesc', '.cloud-sync.json'), (err) ->
+
+    new File(fullPathFor 'somedesc', SYNCFILE).write(
+      """{
+           "container": "derpderp",
+           "directory": ""
+         }
+
+      """)
 
   describe 'finishInitialization', ->
 
@@ -95,7 +103,7 @@ describe 'SyncView', ->
 
       runs ->
         rp = view.getSyncFile().getRealPathSync()
-        expect(rp).toBe(fullPathFor 'nodesc', '.cloud-sync.json')
+        expect(rp).toBe(fullPathFor 'nodesc', SYNCFILE)
 
     it 'finds a .cloud-sync.json file in a parent directory', ->
       view = syncViewIn 'parent', 'child'
@@ -104,9 +112,9 @@ describe 'SyncView', ->
 
       runs ->
         rp = view.getSyncFile().getRealPathSync()
-        expect(rp).toBe(fullPathFor 'parent', '.cloud-sync.json')
+        expect(rp).toBe(fullPathFor 'parent', SYNCFILE)
 
-  describe 'apply', ->
+  describe 'apply button', ->
 
     it 'writes a .cloud-sync.json file', ->
       view = syncViewIn 'nodesc'
@@ -118,7 +126,7 @@ describe 'SyncView', ->
         view.apply()
 
         dir = new Directory(fullPathFor 'nodesc')
-        sf = new File(fullPathFor 'nodesc', '.cloud-sync.json')
+        sf = new File(fullPathFor 'nodesc', SYNCFILE)
         expect(sf.exists()).toBe(true)
 
         sd = null
@@ -130,3 +138,33 @@ describe 'SyncView', ->
         runs ->
           expect(sd.container).toBe('superawesome')
           expect(sd.psuedoDirectory).toBe('blerp')
+
+  describe 'unsync button', ->
+
+    it 'is disabled if there is no .cloud-sync.json', ->
+      view = syncViewIn 'nodesc'
+      waitsFor -> view.ready
+      runs ->
+        expect(view.unsyncButton.prop 'disabled').toBe(true)
+
+    it 'deletes the .cloud-sync.json file', ->
+      view = syncViewIn 'somedesc'
+      unsynched = false
+
+      waitsFor -> view.ready
+
+      runs ->
+        expect(view.unsyncButton.prop 'disabled').toBe(false)
+        view.unsync -> unsynched = true
+
+      waitsFor -> unsynched
+
+      runs ->
+        fp = view.getSyncFile().getRealPathSync()
+        expect(fs.existsSync fp).toBe(false)
+
+        expect(view.unsyncButton.prop 'disabled').toBe(true)
+        expect(view.applyButton.prop 'disabled').toBe(true)
+        expect(view.containerName.getText()).toBe('')
+        expect(view.directoryNAme.getText()).toBe('')
+        expect(view.containerErr.css 'display').toBe('none')
