@@ -1,4 +1,6 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  '.tree-view':
-      'Cloud Sync': 'cloud-sync:sync'
+  '.tree-view .directory.selected':
+    'Synchronize...': 'cloud-sync:sync-dialog'
+  '.tree-view .file.selected':
+    'To The Cloud': 'cloud-sync:sync'
