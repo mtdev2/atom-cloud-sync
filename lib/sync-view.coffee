@@ -9,7 +9,9 @@ class SyncView extends ScrollView
   @content: ->
     @div class: 'syncview padded pane-item tool-panel', =>
       @h1 =>
-        @text 'Synchronize This Directory With The '
+        @text 'Synchronize '
+        @code outlet: 'fsDirName'
+        @text ' With The '
         @i class: 'icon icon-cloud-upload'
       @div class: 'panel bordered', =>
         @div class: 'panel-heading', 'Where Should It Go?'
@@ -38,10 +40,18 @@ class SyncView extends ScrollView
     @directory = new Directory dirPath
     SyncDescription.withNearest @directory, (err, instance) =>
       throw err if err
+
       @syncDescription = instance
-      @ready = true
+      @finishInitialization()
 
     @containerName.getEditor().on 'contents-modified', => @checkValidity()
+
+  finishInitialization: ->
+    @ready = true
+
+    fullDir = @getSyncDirectory().getRealPathSync()
+    relDir = atom.project.relativize fullDir
+    @fsDirName.text relDir
 
   getUri: -> @uri
 
@@ -75,6 +85,15 @@ class SyncView extends ScrollView
       @containerErr.append $$ ->
         @i class: 'icon icon-warning'
         @span err
+
+  getSyncDirectory: ->
+    unless @ready?
+      throw new Error('SyncView not ready')
+
+    if @syncDescription?
+      @syncDescription.directory
+    else
+      @directory
 
   getSyncFile: ->
     unless @ready?

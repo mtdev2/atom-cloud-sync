@@ -93,21 +93,23 @@ describe 'SyncView', ->
 
     it 'writes a .cloud-sync.json file', ->
       view = syncViewIn 'nodesc'
-      view.containerName.getEditor().setText 'superawesome'
-      view.directoryName.getEditor().setText 'blerp'
-
-      view.apply()
-
-      dir = new Directory(fullPathFor 'nodesc')
-      sf = new File(fullPathFor 'nodesc', '.cloud-sync.json')
-      expect(sf.exists()).toBe(true)
-
-      sd = null
-      SyncDescription.createFrom sf, dir, (err, desc) ->
-        console.log err if err
-        sd = desc
-      waitsFor -> sd?
-
+      waitsFor -> view.ready
       runs ->
-        expect(sd.container).toBe('superawesome')
-        expect(sd.psuedoDirectory).toBe('blerp')
+        view.containerName.getEditor().setText 'superawesome'
+        view.directoryName.getEditor().setText 'blerp'
+
+        view.apply()
+
+        dir = new Directory(fullPathFor 'nodesc')
+        sf = new File(fullPathFor 'nodesc', '.cloud-sync.json')
+        expect(sf.exists()).toBe(true)
+
+        sd = null
+        SyncDescription.createFrom sf, dir, (err, desc) ->
+          console.log err if err
+          sd = desc
+        waitsFor -> sd?
+
+        runs ->
+          expect(sd.container).toBe('superawesome')
+          expect(sd.psuedoDirectory).toBe('blerp')
