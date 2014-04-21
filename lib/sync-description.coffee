@@ -52,7 +52,7 @@ class SyncDescription
   # callback - Invoked with any errors that are encountered, or with the full
   #            path to each file.
   #
-  withFiles: (callback) ->
+  withEachPath: (callback) ->
     helper = (root) ->
       root.getEntries (err, entries) ->
         if err?

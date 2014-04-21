@@ -81,14 +81,14 @@ describe 'SyncDescription', ->
   describe 'enumerating contents', ->
 
     it 'recursively enumerates files', ->
-      files = []
+      paths = []
 
       withDescription ['parent', '.cloud-sync.json'], (sd) ->
-        sd.withFiles (err, file) ->
-          err ? console.log err : files.push file
+        sd.withEachPath (err, path) ->
+          err ? console.log err : paths.push path
 
       waitsFor -> files.length is 2
 
       runs ->
-        expect(files).toContain fixturePath 'parent', 'inparent.txt'
-        expect(files).toContain fixturePath 'parent', 'child', 'placeholder.txt'
+        expect(paths).toContain fixturePath 'parent', 'inparent.txt'
+        expect(paths).toContain fixturePath 'parent', 'child', 'placeholder.txt'
