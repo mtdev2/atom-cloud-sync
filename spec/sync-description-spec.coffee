@@ -84,12 +84,11 @@ describe 'SyncDescription', ->
       files = []
 
       withDescription ['parent', '.cloud-sync.json'], (sd) ->
-        sd.withFiles (file) ->
-          files.push file
+        sd.withFiles (err, file) ->
+          err ? console.log err : files.push file
 
       waitsFor -> files.length is 2
 
       runs ->
-        paths = f.getPath() for f in files
-        expect(paths).toContain fixturePath 'parent', 'inparent.txt'
-        expect(paths).toContain fixturePath 'parent', 'child', 'placeholder.txt'
+        expect(files).toContain fixturePath 'parent', 'inparent.txt'
+        expect(files).toContain fixturePath 'parent', 'child', 'placeholder.txt'

@@ -1,5 +1,5 @@
 path = require 'path'
-{Directory} = require 'pathwatcher'
+{File, Directory} = require 'pathwatcher'
 CloudCredentials = require './cloud-credentials'
 
 pathHelpers = require './path-helpers'
@@ -44,6 +44,28 @@ class SyncDescription
   #
   withCredentials: (callback) ->
     CloudCredentials.withNearest @directory, callback
+
+  # Public: Iterate over the "pushable" contents of this directory; that is,
+  # all files contained recursively within the root directory of this
+  # SyncDescription or any child directory, except for the cloud-sync dotfile.
+  #
+  # callback - Invoked with any errors that are encountered, or with the full
+  #            path to each file.
+  #
+  withFiles: (callback) ->
+    helper = (root) ->
+      root.getEntries (err, entries) ->
+        if err?
+          callback(err)
+          return
+
+        for entry in entries
+          if entry instanceof File and entry.getBaseName() isnt FILENAME
+            callback(null, entry.getRealPathSync())
+          if entry instanceof Directory
+            helper(entry)
+
+    helper(@directory)
 
   # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
   # the directory tree. Parse the first one found into a SyncDescription.
