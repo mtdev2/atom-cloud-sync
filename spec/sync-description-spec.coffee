@@ -77,3 +77,19 @@ describe 'SyncDescription', ->
 
     it 'finds CloudCredentials by walking the filesystem', ->
       itLoadsCredentials ['bar', '.cloud-sync.json'], 'defaultuser'
+
+  describe 'enumerating contents', ->
+
+    it 'recursively enumerates files', ->
+      files = []
+
+      withDescription ['parent', '.cloud-sync.json'], (sd) ->
+        sd.withFiles (file) ->
+          files.push file
+
+      waitsFor -> files.length is 2
+
+      runs ->
+        paths = f.getPath() for f in files
+        expect(paths).toContain fixturePath 'parent', 'inparent.txt'
+        expect(paths).toContain fixturePath 'parent', 'child', 'placeholder.txt'
