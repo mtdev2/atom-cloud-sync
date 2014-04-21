@@ -1,6 +1,6 @@
 path = require 'path'
 {File, Directory} = require 'pathwatcher'
-CloudCredentials = require './cloud-credentials'
+{CloudCredentials, FILENAME: CREDFILE} = require './cloud-credentials'
 
 pathHelpers = require './path-helpers'
 

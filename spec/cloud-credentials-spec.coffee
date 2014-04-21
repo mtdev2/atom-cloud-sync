@@ -1,12 +1,12 @@
-CloudCredentials = require '../lib/cloud-credentials'
+{CloudCredentials, FILENAME} = require '../lib/cloud-credentials'
 {File, Directory} = require 'pathwatcher'
 path = require 'path'
 
 describe 'CloudCredentials', ->
 
-  it 'loads from a .cloud-credentials.json file', ->
+  it "loads from a #{FILENAME} file", ->
     root = atom.project.getRootDirectory().getRealPathSync()
-    f = new File(path.join root, '.cloud-credentials.json')
+    f = new File(path.join root, FILENAME)
     credentials = null
 
     f.read(false).then (contents) ->
@@ -23,12 +23,12 @@ describe 'CloudCredentials', ->
 
   it 'creates itself from a File', ->
     root = atom.project.getRootDirectory().getRealPathSync()
-    f = new File(path.join, '.cloud-credentials.json')
+    f = new File(path.join, FILENAME)
 
     CloudCredentials.createFrom f, (creds) ->
       expect(creds.username).toBe('defaultuser')
 
-  it 'finds the nearest .cloud-credentials.json up the directory hierarchy', ->
+  it "finds the nearest #{FILENAME} up the directory hierarchy", ->
     root = atom.project.getRootDirectory().getRealPathSync()
     d = new Directory(path.join root, 'sync-description', 'bar')
     credentials = null

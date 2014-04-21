@@ -4,8 +4,6 @@ pathHelpers = require './path-helpers'
 
 FILENAME = '.cloud-credentials.json'
 
-module.exports =
-
 # Public: Manage credentials and other Secret Information.
 #
 class CloudCredentials
@@ -38,3 +36,7 @@ class CloudCredentials
   @withNearest: (directory, callback) ->
     pathHelpers.nearestParent directory, FILENAME, (err, dir, file) ->
       CloudCredentials.createFrom file, callback
+
+module.exports =
+  CloudCredentials: CloudCredentials
+  FILENAME: FILENAME
