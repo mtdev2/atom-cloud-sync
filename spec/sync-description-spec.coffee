@@ -87,7 +87,7 @@ describe 'SyncDescription', ->
         sd.withEachPath (err, path) ->
           err ? console.log err : paths.push path
 
-      waitsFor -> files.length is 2
+      waitsFor -> paths.length is 2
 
       runs ->
         expect(paths).toContain fixturePath 'parent', 'inparent.txt'
