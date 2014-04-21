@@ -85,10 +85,16 @@ describe 'SyncDescription', ->
 
       withDescription ['parent', '.cloud-sync.json'], (sd) ->
         sd.withEachPath (err, path) ->
-          err ? console.log err : paths.push path
+          if err?
+            console.log err
+          else
+            paths.push path
 
       waitsFor -> paths.length is 2
 
       runs ->
         expect(paths).toContain fixturePath 'parent', 'inparent.txt'
         expect(paths).toContain fixturePath 'parent', 'child', 'placeholder.txt'
+        expect(paths).not.toContain fixturePath(
+          'parent', '.cloud-credentials.json'
+        )

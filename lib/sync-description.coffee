@@ -60,8 +60,10 @@ class SyncDescription
           return
 
         for entry in entries
-          if entry instanceof File and entry.getBaseName() isnt FILENAME
-            callback(null, entry.getRealPathSync())
+          if entry instanceof File
+            baseName = entry.getBaseName()
+            if baseName isnt FILENAME and baseName isnt CREDFILE
+              callback(null, entry.getRealPathSync())
           if entry instanceof Directory
             helper(entry)
 
