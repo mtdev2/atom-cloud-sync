@@ -25,7 +25,7 @@ class SyncDescription
   #
   constructor: (@directory, settings) ->
     @container = settings.container
-    @psuedoDirectory = settings.directory or '/'
+    @psuedoDirectory = settings.directory or ''
 
     unless @container?
       throw new Error("#{@configPath()} is missing a required 'container' key!")
