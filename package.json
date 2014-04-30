@@ -11,6 +11,6 @@
   "dependencies": {
     "pkgcloud": ">=0.9.2",
     "underscore-plus": "1.x",
-    "pathwatcher": "^1.0"
+    "pathwatcher": "1.2.1"
   }
 }

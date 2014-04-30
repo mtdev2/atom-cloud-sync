@@ -56,9 +56,9 @@ describe 'SyncDescription', ->
       expect(sd.container).toBe('magic')
       expect(sd.psuedoDirectory).toBe('somedir/')
 
-  it 'defaults the psuedoDirectory to /', ->
+  it 'defaults the psuedoDirectory to ""', ->
     withDescription ['foo', '.cloud-sync.json'], (sd) ->
-      expect(sd.psuedoDirectory).toBe('/')
+      expect(sd.psuedoDirectory).toBe('')
 
   describe 'finding CloudCredentials', ->
 
@@ -77,3 +77,24 @@ describe 'SyncDescription', ->
 
     it 'finds CloudCredentials by walking the filesystem', ->
       itLoadsCredentials ['bar', '.cloud-sync.json'], 'defaultuser'
+
+  describe 'enumerating contents', ->
+
+    it 'recursively enumerates files', ->
+      paths = []
+
+      withDescription ['parent', '.cloud-sync.json'], (sd) ->
+        sd.withEachPath (err, path) ->
+          if err?
+            console.log err
+          else
+            paths.push path
+
+      waitsFor -> paths.length is 2
+
+      runs ->
+        expect(paths).toContain fixturePath 'parent', 'inparent.txt'
+        expect(paths).toContain fixturePath 'parent', 'child', 'placeholder.txt'
+        expect(paths).not.toContain fixturePath(
+          'parent', '.cloud-credentials.json'
+        )

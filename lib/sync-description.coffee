@@ -1,6 +1,6 @@
 path = require 'path'
-{Directory} = require 'pathwatcher'
-CloudCredentials = require './cloud-credentials'
+{File, Directory} = require 'pathwatcher'
+{CloudCredentials, FILENAME: CREDFILE} = require './cloud-credentials'
 
 pathHelpers = require './path-helpers'
 
@@ -25,7 +25,7 @@ class SyncDescription
   #
   constructor: (@directory, settings) ->
     @container = settings.container
-    @psuedoDirectory = settings.directory or '/'
+    @psuedoDirectory = settings.directory or ''
 
     unless @container?
       throw new Error("#{@configPath()} is missing a required 'container' key!")
@@ -44,6 +44,30 @@ class SyncDescription
   #
   withCredentials: (callback) ->
     CloudCredentials.withNearest @directory, callback
+
+  # Public: Iterate over the "pushable" contents of this directory; that is,
+  # all files contained recursively within the root directory of this
+  # SyncDescription or any child directory, except for the cloud-sync dotfile.
+  #
+  # callback - Invoked with any errors that are encountered, or with the full
+  #            path to each file.
+  #
+  withEachPath: (callback) ->
+    helper = (root) ->
+      root.getEntries (err, entries) ->
+        if err?
+          callback(err)
+          return
+
+        for entry in entries
+          if entry.isFile()
+            baseName = entry.getBaseName()
+            if baseName isnt FILENAME and baseName isnt CREDFILE
+              callback(null, entry.getRealPathSync())
+          if entry.isDirectory()
+            helper(entry)
+
+    helper(@directory)
 
   # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
   # the directory tree. Parse the first one found into a SyncDescription.
@@ -84,9 +108,9 @@ class SyncDescription
       return callback(err, null) if err
 
       for entry in list
-        if entry instanceof Directory
+        if entry.isDirectory()
           @findAllIn entry, callback
-        else if entry.getBaseName() is FILENAME
+        else if entry.isFile() and entry.getBaseName() is FILENAME
           @createFrom entry, root, callback
 
   # Internal: Construct a new instance from the parsed contents of a
