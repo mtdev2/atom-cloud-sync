@@ -18,10 +18,9 @@ uploadAll = ->
       description.withEachPath (err, p) ->
         throw err if err?
 
-        # client.uploadFile p,
-        #   description.container,
-        #   path.join description.psuedoDirectory, path.basename(p)
-        console.log "Uploaded #{p}"
+        client.uploadFile p,
+          description.container,
+          path.join description.psuedoDirectory, path.basename(p)
 
 module.exports =
 
