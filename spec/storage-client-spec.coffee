@@ -20,10 +20,9 @@ class FakeCloudClient
     @uploadOptions = null
     @uploadCallback = null
 
-  createContainer: (options, callback) ->
-    callback null,
-      enableCdn: (callback) -> callback(null)
-      disableCdn: (callback) -> callback(null)
+  createContainer: (options, callback) -> callback null, null
+
+  setCdnEnabled: (containerName, shouldBeEnabled, callback) -> callback null
 
   upload: (options, callback) ->
     # Clear out any old data

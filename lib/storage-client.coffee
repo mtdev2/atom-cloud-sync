@@ -34,12 +34,10 @@ class StorageClient
   uploadFile: (filePath, containerName, objectName, cdn) ->
     console.log("Uploading #{filePath} into #{containerName} as #{objectName}")
 
-    @client.createContainer name: containerName, (err, container) =>
+    @client.createContainer containerName, (err, container) =>
       throw err if err?
 
-      cdnify = if cdn then container.enableCdn else container.disableCdn
-
-      cdnify (err) =>
+      @client.setCdnEnabled containerName, cdn, (err) =>
         throw err if err?
 
         file = fs.createReadStream(filePath)

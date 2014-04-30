@@ -63,6 +63,7 @@ describe 'SyncView', ->
       runs ->
         expect(view.containerName.getText()).toBe('derpderp')
         expect(view.directoryName.getText()).toBe('snorf')
+        expect(view.isPublic.prop 'checked').toBe(false)
 
   describe 'checkValidity', ->
 
@@ -126,6 +127,7 @@ describe 'SyncView', ->
       runs ->
         view.containerName.setText 'superawesome'
         view.directoryName.setText 'blerp'
+        view.isPublic.prop 'checked', true
 
         view.apply()
 
@@ -142,6 +144,7 @@ describe 'SyncView', ->
         runs ->
           expect(sd.container).toBe('superawesome')
           expect(sd.psuedoDirectory).toBe('blerp')
+          expect(sd.public).toBe(true)
 
   describe 'unsync button', ->
 
@@ -171,4 +174,5 @@ describe 'SyncView', ->
         expect(view.applyButton.prop 'disabled').toBe(true)
         expect(view.containerName.getText()).toBe('')
         expect(view.directoryName.getText()).toBe('')
+        expect(view.isPublic.prop 'checked').toBe(false)
         expect(view.containerErr.css 'display').toBe('none')
