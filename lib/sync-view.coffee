@@ -26,6 +26,14 @@ class SyncView extends ScrollView
           @div class: 'block', =>
             @label class: 'inline-block', 'Directory'
             @subview 'directoryName', new EditorView(mini: true)
+      @div class: 'panel bordered', =>
+        @div class: 'panel-heading', 'Who Should See It?'
+        @div class: 'panel-body padded', =>
+          @div class: 'block', =>
+            @label class: 'inline-block', 'Publish to CDN'
+            @input type: 'checkbox', outlet: 'isPublic'
+      @div class: 'panel bordered', =>
+        @div class: 'panel-body padded', =>
           @div class: 'block', =>
             @button({
               class: 'btn btn-lg btn-primary inline-block',
@@ -72,12 +80,14 @@ class SyncView extends ScrollView
         @containerName.setText @syncDescription.container
         @directoryName.setText @syncDescription.psuedoDirectory
         @unsyncButton.prop 'disabled', false
+        @isPublic.prop 'checked', @syncDescription.public
         @checkValidity()
       else
         @containerName.setText ''
         @directoryName.setText ''
         @unsyncButton.prop 'disabled', true
         @applyButton.prop 'disabled', true
+        @isPublic.prop 'checked', false
 
   getUri: -> @uri
 
@@ -134,6 +144,7 @@ class SyncView extends ScrollView
     @getSyncFile().write JSON.stringify
       container: @containerName.getText()
       directory: @directoryName.getText()
+      public: @isPublic.prop('checked')
     @refresh()
 
   unsync: ->

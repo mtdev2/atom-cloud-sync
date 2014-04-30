@@ -20,12 +20,16 @@ class SyncDescription
   #                         be mapped to within cloud storage.
   #             directory - Optional. Psuedodirectory within the target
   #                         container that files should be placed within.
+  #             public    - Optional. If true, the container will be
+  #                         CDN-enabled. If false, the CDN will be disabled.
+  #                         Defaults to `false`.
   #
   # Raises InvalidSyncConfiguration if required settings are missing.
   #
   constructor: (@directory, settings) ->
     @container = settings.container
-    @psuedoDirectory = settings.directory or ''
+    @psuedoDirectory = settings.directory ? ''
+    @public = settings.public ? false
 
     unless @container?
       throw new Error("#{@configPath()} is missing a required 'container' key!")

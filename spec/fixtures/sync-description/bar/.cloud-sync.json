@@ -1,4 +1,5 @@
 {
   "container": "magic",
-  "directory": "somedir/"
+  "directory": "somedir/",
+  "public": true
 }
