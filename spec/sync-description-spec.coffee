@@ -56,9 +56,9 @@ describe 'SyncDescription', ->
       expect(sd.container).toBe('magic')
       expect(sd.psuedoDirectory).toBe('somedir/')
 
-  it 'defaults the psuedoDirectory to /', ->
+  it 'defaults the psuedoDirectory to ""', ->
     withDescription ['foo', '.cloud-sync.json'], (sd) ->
-      expect(sd.psuedoDirectory).toBe('/')
+      expect(sd.psuedoDirectory).toBe('')
 
   describe 'finding CloudCredentials', ->
 
