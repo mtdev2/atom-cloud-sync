@@ -1,12 +1,13 @@
 pkgcloud = require 'pkgcloud'
 fs = require 'fs'
 
-# Just placing this here to have a dummy callback
+# Just placing this here to have a dummy callback.
+#
 genericCallback = (err, result) ->
   if err?
     console.error(err)
-    return
-  console.log(result)
+  else
+    console.log(result)
 
 module.exports =
 class StorageClient
@@ -31,16 +32,18 @@ class StorageClient
   # container if necessary.
   #
   uploadFile: (filePath, containerName, objectName) ->
+    console.log("Uploading #{filePath} into #{containerName} as #{objectName}")
 
-    console.log("Uploading #{filePath} => #{containerName}")
+    @client.createContainer containerName, (err, container) =>
+      throw err if err?
 
-    file = fs.createReadStream(filePath)
+      file = fs.createReadStream(filePath)
 
-    layout =
-      container: containerName
-      remote: objectName
+      layout =
+        container: containerName
+        remote: objectName
 
-    file.pipe(@client.upload(layout, genericCallback))
+      file.pipe(@client.upload(layout, genericCallback))
 
   # Upload all the files within the directory into the container, starting
   # them off with objectPath
