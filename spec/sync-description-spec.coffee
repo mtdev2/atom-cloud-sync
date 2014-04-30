@@ -50,6 +50,13 @@ describe 'SyncDescription', ->
       expect(rp).toBe(fixturePath 'parent')
 
   it 'returns null if no .cloud-sync.json files exist', ->
+    called = false
+    SyncDescription.withNearest fixtureDir('baz'), (err, desc) ->
+      expect(err).toBeNull()
+      expect(desc).toBeNull()
+      called = true
+
+    waitsFor -> called
 
   it 'parses configuration data from .cloud-sync.json', ->
     withDescription ['bar', '.cloud-sync.json'], (sd) ->
