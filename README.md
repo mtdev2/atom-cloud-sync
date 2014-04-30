@@ -1,5 +1,7 @@
 # Cloud Sync
 
+[![Build Status](https://travis-ci.org/rackerlabs/atom-cloud-sync.svg?branch=master)](https://travis-ci.org/rackerlabs/atom-cloud-sync)
+
 **Like a 90s website, this is under construction.**
 
 :construction_worker::construction_worker::construction_worker::construction_worker::construction_worker:
