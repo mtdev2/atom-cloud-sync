@@ -20,7 +20,8 @@ uploadAll = ->
 
         client.uploadFile p,
           description.container,
-          path.join description.psuedoDirectory, path.basename(p)
+          path.join(description.psuedoDirectory, path.basename(p)),
+          description.public
 
 module.exports =
 

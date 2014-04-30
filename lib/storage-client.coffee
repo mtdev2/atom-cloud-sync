@@ -31,19 +31,24 @@ class StorageClient
   # Uploads filePath to objectName in container containerName. Creates the
   # container if necessary.
   #
-  uploadFile: (filePath, containerName, objectName) ->
+  uploadFile: (filePath, containerName, objectName, cdn) ->
     console.log("Uploading #{filePath} into #{containerName} as #{objectName}")
 
-    @client.createContainer containerName, (err, container) =>
+    @client.createContainer name: containerName, (err, container) =>
       throw err if err?
 
-      file = fs.createReadStream(filePath)
+      cdnify = if cdn then container.enableCdn else container.disableCdn
 
-      layout =
-        container: containerName
-        remote: objectName
+      cdnify (err) =>
+        throw err if err?
 
-      file.pipe(@client.upload(layout, genericCallback))
+        file = fs.createReadStream(filePath)
+
+        layout =
+          container: containerName
+          remote: objectName
+
+        file.pipe(@client.upload(layout, genericCallback))
 
   # Upload all the files within the directory into the container, starting
   # them off with objectPath
