@@ -60,11 +60,11 @@ class SyncDescription
           return
 
         for entry in entries
-          if entry instanceof File
+          if entry.isFile()
             baseName = entry.getBaseName()
             if baseName isnt FILENAME and baseName isnt CREDFILE
               callback(null, entry.getRealPathSync())
-          if entry instanceof Directory
+          if entry.isDirectory()
             helper(entry)
 
     helper(@directory)
