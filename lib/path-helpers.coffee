@@ -13,7 +13,7 @@ nearestParentFrom = (directory, filename, callback) ->
       return
 
     for entry in list
-      if entry instanceof File and entry.getBaseName() is filename
+      if entry.isFile() and entry.getBaseName() is filename
         callback(err, directory, entry)
         return
 
@@ -38,7 +38,7 @@ module.exports =
   #             no such file is discovered, `null` will be yielded instead.
   #
   nearestParent: (beginning, filename, callback) ->
-    if beginning instanceof Directory
+    if beginning.isDirectory()
       nearestParentFrom beginning, filename, callback
     else
       dir = new Directory(path.dirname beginning.getPath())

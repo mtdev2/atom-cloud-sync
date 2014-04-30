@@ -108,9 +108,9 @@ class SyncDescription
       return callback(err, null) if err
 
       for entry in list
-        if entry instanceof Directory
+        if entry.isDirectory()
           @findAllIn entry, callback
-        else if entry.getBaseName() is FILENAME
+        else if entry.isFile() and entry.getBaseName() is FILENAME
           @createFrom entry, root, callback
 
   # Internal: Construct a new instance from the parsed contents of a

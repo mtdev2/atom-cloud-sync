@@ -7,18 +7,16 @@ path = require 'path'
 # Internal: Upload all or some synchronized directories.
 #
 uploadAll = ->
-  console.log "Uploading all..."
-  SyncDescription.findAll (description) ->
-    console.log "Found description..."
-    description.withCredentials (cred) ->
-      console.log "Found credentials..."
-      console.log cred
+  SyncDescription.findAll (err, description) ->
+    throw err if err?
+
+    description.withCredentials (err, cred) ->
+      throw err if err?
+
       client = new StorageClient(cred)
 
       description.withEachPath (err, p) ->
-        if err?
-          console.log err
-          return
+        throw err if err?
 
         # client.uploadFile p,
         #   description.container,
