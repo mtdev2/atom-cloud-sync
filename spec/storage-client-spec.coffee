@@ -6,7 +6,8 @@ pkgcloud = require('pkgcloud')
 
 Stream = require 'stream'
 
-# A totally hokey storage client for pkgcloud
+# A totally hokey storage client for pkgcloud.
+#
 class FakeCloudClient
 
   constructor: (creds) ->
@@ -19,13 +20,14 @@ class FakeCloudClient
     @uploadOptions = null
     @uploadCallback = null
 
+  createContainer: (options, callback) -> callback(null, null)
+
   upload: (options, callback) ->
     # Clear out any old data
     @bufferedData = []
     @fulldata = null
 
     @uploadOptions = options
-    console.log(options)
     @uploadCallback = callback
 
     # Set up the object that handles piped in data
