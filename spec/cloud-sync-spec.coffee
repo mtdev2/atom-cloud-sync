@@ -11,19 +11,11 @@ describe "CloudSync", ->
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('cloud-sync')
+
+    # This is an activation event, triggering it will cause the package to be
+    # activated.
+    atom.workspaceView.trigger 'cloud-sync:sync'
+    waitsForPromise -> atom.packages.activatePackage('cloud-sync')
 
   describe "when the cloud-sync:sync event is triggered", ->
-    it "attempts to sync the selected file", ->
-
-      # This is an activation event, triggering it will cause the package to be
-      # activated.
-      atom.workspaceView.trigger 'cloud-sync:sync'
-
-      waitsForPromise ->
-        activationPromise
-
-      runs ->
-        expect(atom.workspaceView.find('.cloud-sync')).toExist()
-        atom.workspaceView.trigger 'cloud-sync:toggle'
-        expect(atom.workspaceView.find('.cloud-sync')).not.toExist()
+    it "attempts to sync the selected file"
