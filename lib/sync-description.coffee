@@ -7,6 +7,10 @@ pathHelpers = require './path-helpers'
 
 FILENAME = '.cloud-sync.json'
 
+# Public: Error to be raised when no SyncDescription can be found.
+#
+class NoDescriptionError extends Error
+
 # Public: Model corresponding to a dotfile that describes where and how a
 # directory should be synchronized with a cloud storage container.
 #
@@ -90,7 +94,7 @@ class SyncDescription
           path.join(@psuedoDirectory, path.basename(p)),
           @public
 
-  # Public: Upload a single file underneath this directory to the specified
+  # Internal: Upload a single file underneath this directory to the specified
   # container.
   #
   # file - An individual File. Must be underneath this description's
@@ -130,6 +134,23 @@ class SyncDescription
         @createFrom file, dir, callback
       else
         callback(null, null, null)
+
+  # Public: Upload a single file, using its nearest SyncDescription.
+  #
+  # file     - The File to be uploaded.
+  # callback - A callback to be invoked with any errors that are encountered.
+  #
+  @uploadFile: (file, callback) ->
+    root = new Directory(path.dirname file.getRealPathSync())
+    SyncDescription.withNearest root, (err, description) ->
+      if err?
+        callback(err)
+        return
+
+      unless description?
+        callback(new NoDescriptionError("Unable to find a SyncDescription"))
+
+      description.uploadFile file
 
   # Public: Scan the current project's filesystem for directories containing
   # ".cloud-sync.json" files. Parse each one into a SyncDescription and send it
@@ -174,7 +195,6 @@ class SyncDescription
     promise.catch (err) -> callback(err, null)
 
 module.exports =
-
   SyncDescription: SyncDescription
-
   FILENAME: FILENAME
+  NoDescriptionError: NoDescriptionError

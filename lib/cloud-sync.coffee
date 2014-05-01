@@ -50,14 +50,7 @@ module.exports =
     atom.workspaceView.command 'cloud-sync:sync', uploadSelection
 
     atom.on 'cloud-sync:sync-file', (event) ->
-      root = new Directory(path.dirname event.file.getRealPathSync())
-      SyncDescription.withNearest root, (err, description) ->
-        throw err if err?
-        unless description?
-          throw new Error("Unable to find a SyncDescription that owns
-            #{event.file}")
-
-        description.uploadFile event.file
+      SyncDescription.uploadFile event.file, (err) -> throw err if err?
 
     atom.workspaceView.command 'cloud-sync:sync-all', ->
       SyncDescription.findAll (err, description) ->
