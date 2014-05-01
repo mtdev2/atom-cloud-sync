@@ -90,6 +90,29 @@ class SyncDescription
           path.join(@psuedoDirectory, path.basename(p)),
           @public
 
+  # Public: Upload a single file underneath this directory to the specified
+  # container.
+  #
+  # file - An individual File. Must be underneath this description's
+  #        directory.
+  #
+  uploadFile: (file) ->
+    p = file.getRealPathSync()
+    dir = @directory.getRealPathSync()
+    unless p.startsWith(dir)
+      throw new Error("uploadFile must be called with a file within its
+        directory")
+
+    @withCredentials (err, cred) =>
+      throw err if err?
+      client = new StorageClient(cred)
+      rel = @directory.relativize(p)
+
+      client.uploadFile p,
+        @container,
+        path.join(@psuedoDirectory, rel),
+        @public
+
   # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
   # the directory tree. Parse the first one found into a SyncDescription.
   #
