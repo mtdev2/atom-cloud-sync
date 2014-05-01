@@ -1,5 +1,7 @@
 StorageClient = require './storage-client'
-{SyncDescription} = require './sync-description'
+syncdesc = require './sync-description'
+{SyncDescription, NoDescriptionError, FILENAME: DESCFILE} = syncdesc
+{FILENAME: CREDFILE} = require './cloud-credentials'
 {File, Directory} = require 'pathwatcher'
 
 syncview = require './sync-view'
@@ -60,3 +62,12 @@ module.exports =
     syncview.registerOpenerIn atom.workspace
     atom.workspaceView.command 'cloud-sync:sync-dialog', ->
       atom.workspace.open syncview.shareUriFor getSelectedView().getPath()
+
+    atom.workspace.eachEditor (editor) ->
+      buffer = editor.getBuffer()
+      file = buffer.file
+
+      if file.getBaseName() isnt CREDFILE and file.getBaseName() isnt DESCFILE
+        buffer.on 'saved', ->
+          SyncDescription.uploadFile file, (err) ->
+            throw err if err? and not err instanceof NoDescriptionError

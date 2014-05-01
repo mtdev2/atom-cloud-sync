@@ -149,6 +149,7 @@ class SyncDescription
 
       unless description?
         callback(new NoDescriptionError("Unable to find a SyncDescription"))
+        return
 
       description.uploadFile file
 
