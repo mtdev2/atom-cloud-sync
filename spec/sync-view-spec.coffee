@@ -176,3 +176,20 @@ describe 'SyncView', ->
         expect(view.directoryName.getText()).toBe('')
         expect(view.isPublic.prop 'checked').toBe(false)
         expect(view.containerErr.css 'display').toBe('none')
+
+  describe 'sync button', ->
+
+    it 'is disabled if there is no .cloud-sync.json', ->
+      view = syncViewIn 'nodesc'
+      waitsFor -> view.ready
+      runs ->
+        expect(view.syncButton.prop 'disabled').toBe(true)
+
+    it 'uploads the directory', ->
+      view = syncViewIn 'somedesc'
+      waitsFor -> view.ready
+      runs ->
+        uploaded = false
+        view.syncDescription.upload = -> uploaded = true
+        view.sync()
+        expect(uploaded).toBe(true)

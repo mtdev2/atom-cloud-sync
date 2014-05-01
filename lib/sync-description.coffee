@@ -1,10 +1,15 @@
 path = require 'path'
 {File, Directory} = require 'pathwatcher'
 {CloudCredentials, FILENAME: CREDFILE} = require './cloud-credentials'
+StorageClient = require './storage-client'
 
 pathHelpers = require './path-helpers'
 
 FILENAME = '.cloud-sync.json'
+
+# Public: Error to be raised when no SyncDescription can be found.
+#
+class NoDescriptionError extends Error
 
 # Public: Model corresponding to a dotfile that describes where and how a
 # directory should be synchronized with a cloud storage container.
@@ -73,6 +78,45 @@ class SyncDescription
 
     helper(@directory)
 
+  # Public: Upload everything underneath this directory to the specified
+  # container.
+  #
+  upload: ->
+    @withCredentials (err, cred) =>
+      throw err if err?
+      client = new StorageClient(cred)
+
+      @withEachPath (err, p) =>
+        throw err if err?
+
+        client.uploadFile p,
+          @container,
+          path.join(@psuedoDirectory, path.basename(p)),
+          @public
+
+  # Internal: Upload a single file underneath this directory to the specified
+  # container.
+  #
+  # file - An individual File. Must be underneath this description's
+  #        directory.
+  #
+  uploadFile: (file) ->
+    p = file.getRealPathSync()
+    dir = @directory.getRealPathSync()
+    unless p.startsWith(dir)
+      throw new Error("uploadFile must be called with a file within its
+        directory")
+
+    @withCredentials (err, cred) =>
+      throw err if err?
+      client = new StorageClient(cred)
+      rel = @directory.relativize(p)
+
+      client.uploadFile p,
+        @container,
+        path.join(@psuedoDirectory, rel),
+        @public
+
   # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
   # the directory tree. Parse the first one found into a SyncDescription.
   #
@@ -90,6 +134,23 @@ class SyncDescription
         @createFrom file, dir, callback
       else
         callback(null, null, null)
+
+  # Public: Upload a single file, using its nearest SyncDescription.
+  #
+  # file     - The File to be uploaded.
+  # callback - A callback to be invoked with any errors that are encountered.
+  #
+  @uploadFile: (file, callback) ->
+    root = new Directory(path.dirname file.getRealPathSync())
+    SyncDescription.withNearest root, (err, description) ->
+      if err?
+        callback(err)
+        return
+
+      unless description?
+        callback(new NoDescriptionError("Unable to find a SyncDescription"))
+
+      description.uploadFile file
 
   # Public: Scan the current project's filesystem for directories containing
   # ".cloud-sync.json" files. Parse each one into a SyncDescription and send it
@@ -134,7 +195,6 @@ class SyncDescription
     promise.catch (err) -> callback(err, null)
 
 module.exports =
-
   SyncDescription: SyncDescription
-
   FILENAME: FILENAME
+  NoDescriptionError: NoDescriptionError
