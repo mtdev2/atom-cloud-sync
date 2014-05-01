@@ -1,6 +1,7 @@
 path = require 'path'
 {File, Directory} = require 'pathwatcher'
 {CloudCredentials, FILENAME: CREDFILE} = require './cloud-credentials'
+StorageClient = require './storage-client'
 
 pathHelpers = require './path-helpers'
 
@@ -72,6 +73,22 @@ class SyncDescription
             helper(entry)
 
     helper(@directory)
+
+  # Public: Upload everything underneath this directory to the specified
+  # container.
+  #
+  upload: ->
+    @withCredentials (err, cred) =>
+      throw err if err?
+      client = new StorageClient(cred)
+
+      @withEachPath (err, p) =>
+        throw err if err?
+
+        client.uploadFile p,
+          @container,
+          path.join(@psuedoDirectory, path.basename(p)),
+          @public
 
   # Public: Locate the nearest ".cloud-sync.json" file encountered walking up
   # the directory tree. Parse the first one found into a SyncDescription.

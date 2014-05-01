@@ -4,25 +4,6 @@ StorageClient = require './storage-client'
 syncview = require './sync-view'
 path = require 'path'
 
-# Internal: Upload all or some synchronized directories.
-#
-uploadAll = ->
-  SyncDescription.findAll (err, description) ->
-    throw err if err?
-
-    description.withCredentials (err, cred) ->
-      throw err if err?
-
-      client = new StorageClient(cred)
-
-      description.withEachPath (err, p) ->
-        throw err if err?
-
-        client.uploadFile p,
-          description.container,
-          path.join(description.psuedoDirectory, path.basename(p)),
-          description.public
-
 module.exports =
 
   storageClient: null
@@ -66,7 +47,11 @@ module.exports =
         @storageClient.uploadFile(itemPath, "cloudsync", fileName)
 
     atom.workspaceView.command 'cloud-sync:sync', uploadSelection
-    atom.workspaceView.command 'cloud-sync:sync-all', uploadAll
+
+    atom.workspaceView.command 'cloud-sync:sync-all', ->
+      SyncDescription.findAll (err, description) ->
+        throw err if err?
+        description.upload()
 
     syncview.registerOpenerIn atom.workspace
     atom.workspaceView.command 'cloud-sync:sync-dialog', ->
