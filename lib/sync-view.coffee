@@ -47,6 +47,12 @@ class SyncView extends ScrollView
               outlet: 'unsyncButton',
               click: 'unsync'
             }, 'Unsync')
+            @button({
+              class: 'btn btn-lg inline-block pull-right',
+              disabled: true,
+              outlet: 'syncButton',
+              click: 'sync'
+            }, 'Synchronize It Now!')
 
   initialize: (@uri) ->
     @ready = false
@@ -63,6 +69,7 @@ class SyncView extends ScrollView
     @syncDescription = null
     @unsyncButton.prop 'disabled', true
     @applyButton.prop 'disabled', true
+    @syncButton.prop 'disabled', true
 
   refresh: ->
     @reset()
@@ -88,6 +95,7 @@ class SyncView extends ScrollView
         @unsyncButton.prop 'disabled', true
         @applyButton.prop 'disabled', true
         @isPublic.prop 'checked', false
+        @syncButton.prop 'disabled', true
 
   getUri: -> @uri
 
@@ -112,10 +120,12 @@ class SyncView extends ScrollView
       @containerInput.removeClass 'text-error'
       @containerErr.css 'display', 'none'
       @applyButton.prop 'disabled', false
+      @syncButton.prop 'disabled', false
     else
       @containerInput.addClass 'text-error'
       @containerErr.css 'display', 'block'
       @applyButton.prop 'disabled', true
+      @syncButton.prop 'disabled', true
 
     for err in errs
       @containerErr.append $$ ->
@@ -151,6 +161,15 @@ class SyncView extends ScrollView
     sfp = @getSyncFile().getRealPathSync()
     @reset()
     fs.unlink sfp, (err) => @refresh()
+
+  sync: ->
+    unless @ready?
+      throw new Error('SyncView not ready')
+
+    unless @syncDescription?
+      throw new Error('SyncDescription needed to sync')
+
+    @syncDescription.upload()
 
 module.exports =
 
