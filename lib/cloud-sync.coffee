@@ -1,5 +1,5 @@
 StorageClient = require './storage-client'
-{SyncDescription} = require './sync-description'
+{SyncDescription, NoDescriptionError} = require './sync-description'
 {File, Directory} = require 'pathwatcher'
 
 syncview = require './sync-view'
@@ -60,3 +60,9 @@ module.exports =
     syncview.registerOpenerIn atom.workspace
     atom.workspaceView.command 'cloud-sync:sync-dialog', ->
       atom.workspace.open syncview.shareUriFor getSelectedView().getPath()
+
+    atom.workspace.eachEditor (editor) ->
+      buffer = editor.getBuffer()
+      buffer.on 'saved', ->
+        SyncDescription.uploadFile buffer.file, (err) ->
+          throw err if err? and not err instanceof NoDescriptionError
