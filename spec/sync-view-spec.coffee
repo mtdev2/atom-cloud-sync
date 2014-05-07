@@ -50,7 +50,7 @@ describe 'SyncView', ->
 
   afterEach -> resetFixtures()
 
-  describe 'finishInitialization', ->
+  describe 'refresh', ->
 
     it 'disables the Apply button until data is loaded', ->
       view = syncViewIn 'parent', 'child'
