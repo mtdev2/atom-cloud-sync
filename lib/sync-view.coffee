@@ -152,6 +152,7 @@ class SyncView extends ScrollView
 
   apply: ->
     @getSyncFile().write JSON.stringify
+      comment: 'This is easier to edit with the Sync Dialog command!'
       container: @containerName.getText()
       directory: @directoryName.getText()
       public: @isPublic.prop('checked')
