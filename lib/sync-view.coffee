@@ -60,7 +60,10 @@ class SyncView extends ScrollView
 
     [_, dirPath] = @uri.match /^cloud-sync-config:\/(.*)/
     @directory = new Directory dirPath
-    @containerName.getEditor().on 'contents-modified', => @checkValidity()
+
+    for miniEditor in [@containerName, @directoryName]
+      miniEditor.getEditor().on 'contents-modified', => @checkValidity()
+    @isPublic.on 'click', => @checkValidity()
 
     @refresh()
 
@@ -119,7 +122,8 @@ class SyncView extends ScrollView
     if errs.length is 0
       @containerInput.removeClass 'text-error'
       @containerErr.css 'display', 'none'
-      @applyButton.prop 'disabled', false
+
+      @applyButton.prop 'disabled', @isUnchanged()
       @syncButton.prop 'disabled', false
     else
       @containerInput.addClass 'text-error'
@@ -140,6 +144,24 @@ class SyncView extends ScrollView
       @syncDescription.directory
     else
       @directory
+
+  isUnchanged: ->
+    persisted = {}
+    if @syncDescription?
+      persisted =
+        container: @syncDescription.container
+        directory: @syncDescription.psuedoDirectory
+        public: @syncDescription.public
+    else
+      persisted =
+        container: ''
+        directory: ''
+        public: false
+
+    @containerName.getText() is persisted.container and
+      @directoryName.getText() is persisted.directory and
+      @isPublic.prop('checked') is persisted.public
+
 
   getSyncFile: ->
     unless @ready?
