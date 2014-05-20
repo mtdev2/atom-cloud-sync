@@ -50,7 +50,7 @@ describe 'SyncView', ->
 
   afterEach -> resetFixtures()
 
-  describe 'finishInitialization', ->
+  describe 'refresh', ->
 
     it 'disables the Apply button until data is loaded', ->
       view = syncViewIn 'parent', 'child'
@@ -98,6 +98,19 @@ describe 'SyncView', ->
       expect(view.containerErr.css 'display').toBe('none')
       messages = view.containerErr.find('span')
       expect(messages.length).toBe(0)
+
+    describe 'with existing data', ->
+
+      beforeEach -> view = syncViewIn 'somedesc'
+
+      it "disables the Apply button if you haven't changed anything", ->
+        view.checkValidity()
+        expect(view.applyButton.prop 'disabled').toBe(true)
+
+      it "enables the Apply button when you've made a change", ->
+        view.containerName.setText 'different'
+        view.checkValidity()
+        expect(view.applyButton.prop 'disabled').toBe(false)
 
   describe 'getSyncFile', ->
 
