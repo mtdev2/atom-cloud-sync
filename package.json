@@ -11,6 +11,10 @@
   "dependencies": {
     "pkgcloud": ">=0.9.4",
     "underscore-plus": "1.x",
+
     "pathwatcher": "1.5.0"
+
+    "pathwatcher": "8.1.0"
+snyk-upgrade-cd9df99e3270abf1286951625c6b227f
   }
 }
